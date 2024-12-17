@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const sellerAuth = (req, res ,next) =>{
     try {
-        console.log(req.cookies, "=======cookies")
+        
         const{ token } = req.cookies;
 
         if(!token){
@@ -11,11 +11,16 @@ const sellerAuth = (req, res ,next) =>{
         }
        
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
         if (!decoded){
-            return res.status(401).json({ message:"Seller not authorized"})
+            return res.status(401).json({ message:"User not authorized"})
         }
 
-        req.seller = decoded;
+        if (decoded.role !== "seller" ) {
+            return res.status(401).json({message:"User not authorized"})
+        }
+
+        req.user = decoded;
         
 
      next();

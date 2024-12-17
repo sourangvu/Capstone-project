@@ -1,6 +1,8 @@
 const userDb = require("../Models/userModel")
 const bcrypt = require('bcrypt');
 const { generateToken } = require("../utils/token");
+const { cloudinaryInstance } = require("../config/cloudinaryConfig")
+
 
 
 const register = async (req, res)=>{
@@ -11,6 +13,9 @@ const register = async (req, res)=>{
 
            return res.status(400).json({ error : "All fields are required" })
         }
+
+        const uploadResult = await cloudinaryInstance.uploader.upload(req.file.path);
+        console.log("upload result=====", uploadResult)
 
         const userAlreadyExist = await userDb.findOne({ email })
 
@@ -26,8 +31,11 @@ const register = async (req, res)=>{
             name, email, password:hashedPassword, mobile
         })
 
-        const savedUser = await newUser.save()
+    
+        {const newUser = new userDb ({image : uploadResult.url, name, email, mobile, password })}
 
+        const savedUser = await newUser.save()
+        
         res.status(200).json({message : "User Created Successfully", data: savedUser })
         
     } catch (error) {
@@ -57,14 +65,20 @@ const login = async (req, res) =>{
             return res.status(400).json({ error:"Incorrect Password"})
         }
 
+        if (!user.isActive){
+            return res.status(400).json ({error:"User profile has deactivated"})
+        }
+
         const  token = generateToken(user,"user");
+
         console.log(token, "=======token");
         res.cookie("token", token)
 
-        const { password, ...userWithOutPassword} = user
+        { const { password, ...userWithOutPassword }  = user._doc 
 
 
-        res.status(200).json({message:"Login Successfull", data: user })
+        res.status(200).json({message:"Login Successfull", data: userWithOutPassword })
+    }
        
     } catch (error) {
         console.log(error);

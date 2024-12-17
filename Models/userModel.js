@@ -28,8 +28,13 @@ const userSchema = new mongoose.Schema({
     default:
       "https://w7.pngwing.com/pngs/981/645/png-transparent-default-profile-united-states-computer-icons-desktop-free-high-quality-person-icon-miscellaneous-silhouette-symbol-thumbnail.png",
   },
+  isActive:{
+  type: Boolean,
+  default:true,
+  },
 },{Timestamps : true });
 
 
 
-module.exports = new mongoose.model("users",  userSchema)
+const User = mongoose.model("User",  userSchema)
+ module.exports = { User }

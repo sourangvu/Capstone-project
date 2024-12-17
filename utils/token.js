@@ -9,4 +9,4 @@ const generateToken = (user, role) =>{
         res.status(error.status || 500).json({error:error.message || "Internal Server Error"}) 
     }
 }
-module.exports = {generateToken} 
+module.exports = { generateToken }
