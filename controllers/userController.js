@@ -61,6 +61,8 @@ const login = async (req, res) =>{
         console.log(token, "=======token");
         res.cookie("token", token)
 
+        const { password, ...userWithOutPassword} = user
+
 
         res.status(200).json({message:"Login Successfull", data: user })
        
